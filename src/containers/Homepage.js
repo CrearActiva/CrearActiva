@@ -1,3 +1,5 @@
+// Reference for this page
+//https://branchv34--serverless-stack.netlify.com/chapters/call-the-list-api.html
 import React, { Component } from "react";
 import "./Homepage.css";
 import { API } from "aws-amplify";
@@ -29,8 +31,11 @@ export default class Homepage extends Component {
     }
 
     try {
-      const feeds = await this.feeds();
-      this.setState({ feeds });
+      const feedval = await this.getfeeds();
+      console.log("load feed");
+      this.setState({ feeds: feedval });
+      console.log(feedval.body);
+      console.log(this.feeds);
     } catch (e) {
       alert(e);
     }
@@ -38,30 +43,31 @@ export default class Homepage extends Component {
     this.setState({ isLoading: false });
   }
 
-  feeds() {
-    return API.get("posts", "/posts");
+  getfeeds() {
+    return API.get("posts", "/feeds");
   }
 
 
-  renderFeedsList(posts) {
-    return [{}].concat(posts).map(
-      (post, i) =>
+  renderFeedsList(feeds) {
+    console.log("Feeds"+feeds);
+    return [{}].concat(feeds).map(
+      (feed, i) =>
         i !== 0
           ? <LinkContainer
-              key={post.postId}
-              to={`/posts/${post.postId}`}
+              key={feed.feedId}
+              to={`/feeds/${feed.feedId}`}
             >
-              <ListGroupItem header={post.content.trim().split("\n")[0]}>
-                {"Created: " + new Date(post.createdAt).toLocaleString()}
+              <ListGroupItem header={feed.feedId}>
+                {"Created: " + (feed.feedId)}
               </ListGroupItem>
             </LinkContainer>
           : <LinkContainer
               key="new"
-              to="/posts/new"
+              to="/feeds/new"
             >
               <ListGroupItem>
                 <h4>
-                  <b>{"\uFF0B"}</b> Create a new post
+                  <b>{"\uFF0B"}</b> Create a new feed
                 </h4>
               </ListGroupItem>
             </LinkContainer>

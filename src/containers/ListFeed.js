@@ -5,7 +5,7 @@ import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
 
-export default class ListFeed extends Component {
+export default class ListPost extends Component {
   constructor(props) {
     super(props);
 
@@ -40,29 +40,33 @@ export default class ListFeed extends Component {
   }
 
   posts() {
-    return API.get("posts", "/posts");
+    API.get("posts", "/posts","").then(response => {
+      return response;
+    }).catch(error => {
+      alert(error.response);
+    });
   }
 
 
-  renderPostsList(notes) {
-    return [{}].concat(notes).map(
-      (note, i) =>
+  renderPostsList(posts) {
+    return [{}].concat(posts).map(
+      (post, i) =>
         i !== 0
           ? <LinkContainer
-              key={note.noteId}
-              to={`/notes/${note.noteId}`}
+              key={post.postId}
+              to={`/posts/${post.postId}`}
             >
-              <ListGroupItem header={note.content.trim().split("\n")[0]}>
-                {"Created: " + new Date(note.createdAt).toLocaleString()}
+              <ListGroupItem header={post.content.trim().split("\n")[0]}>
+                {"Created: " + new Date(post.createdAt).toLocaleString()}
               </ListGroupItem>
             </LinkContainer>
           : <LinkContainer
               key="new"
-              to="/notes/new"
+              to="/posts/new"
             >
               <ListGroupItem>
                 <h4>
-                  <b>{"\uFF0B"}</b> Create a new note
+                  <b>{"\uFF0B"}</b> Create a new post
                 </h4>
               </ListGroupItem>
             </LinkContainer>
@@ -73,7 +77,7 @@ export default class ListFeed extends Component {
     return (
       <div className="lander">
         <h1>Scratch</h1>
-        <p>A simple post taking app</p>
+        <p>CrearActiva</p>
       </div>
     );
   }
