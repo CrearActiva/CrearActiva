@@ -31,11 +31,9 @@ export default class Homepage extends Component {
     }
 
     try {
-      const feedval = await this.getfeeds();
-      console.log("load feed");
+      let feedval = await this.getfeeds();
+      feedval = JSON.parse(feedval.body);
       this.setState({ feeds: feedval });
-      console.log(feedval.body);
-      console.log(this.feeds);
     } catch (e) {
       alert(e);
     }
@@ -49,16 +47,15 @@ export default class Homepage extends Component {
 
 
   renderFeedsList(feeds) {
-    console.log("Feeds"+feeds);
     return [{}].concat(feeds).map(
       (feed, i) =>
         i !== 0
           ? <LinkContainer
-              key={feed.feedId}
-              to={`/feeds/${feed.feedId}`}
+              key={feed}
+              to={`/feeds/${feed}`}
             >
               <ListGroupItem header={feed.feedId}>
-                {"Created: " + (feed.feedId)}
+                {feed.description}
               </ListGroupItem>
             </LinkContainer>
           : <LinkContainer

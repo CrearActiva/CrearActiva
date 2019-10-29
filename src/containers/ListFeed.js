@@ -1,5 +1,8 @@
+//This page lists all the posts within a feed.
+//Reference page: https://serverless-stack.com/chapters/list-all-the-notes.html
+
 import React, { Component } from "react";
-import "./Home.css";
+import "./ListFeed.css";
 import { API } from "aws-amplify";
 import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
