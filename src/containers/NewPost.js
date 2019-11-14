@@ -48,10 +48,17 @@ export default class newpost extends Component {
         ? await s3Upload(this.file)
         : null;
 
+      //test
+      
       await this.createPost({
+        content: this.state.content,
         attachment,
-        content: this.state.content
+        pathParameters: {
+          feedId: "testFeed",   //fix it later, needed to pass a para here!
+          postId: "testPost5"   //typed in by user
+        }
       });
+
       this.props.history.push("/");   //what's this history doing
     } catch (e) {
       alert(e);

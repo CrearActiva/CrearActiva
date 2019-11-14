@@ -21,7 +21,6 @@ export default class NewFeed extends Component {
   }
 
   handleChange = event => {
-    // console.log(event.target.id);
     this.setState({
       [event.target.id]: event.target.value   //return controlId(int)
     });
@@ -33,19 +32,22 @@ export default class NewFeed extends Component {
     this.setState({ isLoading: true });
 
     try {
-      await this.createFeed({
-        FeedId: this.state.FeedId,
-        discription: this.state.discription
+      await this.createFeed({   //only pass one single json para here
+        pathParameters: {
+          feedId: this.state.feedId,
+        },
+        description: this.state.discription
       });
-      this.props.history.push("/");   //what's this function
+
+      this.props.history.push("/");   
     } catch (e) {
       alert(e);
       this.setState({ isLoading: false });
     }
   }
 
-  createFeed(feed) {
-    return API.post("feeds", "/feeds", {
+  createFeed(feed) {    //id, discription
+    return API.post("posts", "/feeds", {
       body: feed
     });
   }
