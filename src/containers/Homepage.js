@@ -47,6 +47,7 @@ export default class Homepage extends Component {
 
 
   renderFeedsList(feeds) {
+    // console.log(feeds);
     return [{}].concat(feeds).map(
       (feed, i) =>
         i !== 0

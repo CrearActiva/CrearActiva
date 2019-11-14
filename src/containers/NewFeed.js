@@ -1,86 +1,75 @@
 import React, { Component } from "react";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
-import config from "../config";
-import "./NewPost.css";
+import "./NewFeed.css";
 import { API } from "aws-amplify";
 import { s3Upload } from "../libs/awsLib";
 
-
-export default class newpost extends Component {
+export default class NewFeed extends Component {
   constructor(props) {
     super(props);
 
-    this.file = null;
-
     this.state = {
       isLoading: null,
-      content: ""
+      feedId: "",
+      discription: ""
     };
   }
 
   validateForm() {
-    return this.state.content.length > 0;
+    return this.state.feedId.length > 0 && this.state.discription.length > 0;
   }
 
   handleChange = event => {
+    // console.log(event.target.id);
     this.setState({
-      [event.target.id]: event.target.value
+      [event.target.id]: event.target.value   //return controlId(int)
     });
   }
 
-  handleFileChange = event => {
-    this.file = event.target.files[0];
-  }
-
-  handleSubmit = async event => {
+  handleSubmit = async event=> {
     event.preventDefault();
-
-    if (this.file && this.file.size > config.MAX_ATTACHMENT_SIZE) {
-      alert(`Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE/1000000} MB.`);
-      return;
-    }
 
     this.setState({ isLoading: true });
 
     try {
-      const attachment = this.file
-        ? await s3Upload(this.file)
-        : null;
-
-      await this.createPost({
-        attachment,
-        content: this.state.content
+      await this.createFeed({
+        FeedId: this.state.FeedId,
+        discription: this.state.discription
       });
-      this.props.history.push("/");   //what's this history doing
+      this.props.history.push("/");   //what's this function
     } catch (e) {
       alert(e);
       this.setState({ isLoading: false });
     }
   }
 
-
-  createPost(post) {
-    return API.post("posts", "/posts", {
-      body: post
+  createFeed(feed) {
+    return API.post("feeds", "/feeds", {
+      body: feed
     });
   }
 
-
   render() {
     return (
-      <div className="newpost">
+      <div className="NewFeed">
         <form onSubmit={this.handleSubmit}>
-          <FormGroup controlId="content">
+          <FormGroup controlId="feedId">
             <FormControl
               onChange={this.handleChange}
-              value={this.state.content}
+              value={this.state.feedId}
+              placeholder="Please type in your feed ID"
               componentClass="textarea"
             />
           </FormGroup>
-          <FormGroup controlId="file">
-            <ControlLabel>Attachment</ControlLabel>
-            <FormControl onChange={this.handleFileChange} type="file" />
+          <FormGroup controlId="discription">
+            <ControlLabel>Discription</ControlLabel>
+            <FormControl 
+              onChange={this.handleChange}
+              value={this.state.discription}
+              placeholder="Please type in your discription"
+              componentClass="textarea"
+            />
           </FormGroup>
           <LoaderButton
             block

@@ -8,7 +8,7 @@ import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
 
-export default class ListPost extends Component {
+export default class ListPost extends Component {   //maybe fix to be ListFeed
   constructor(props) {
     super(props);
 

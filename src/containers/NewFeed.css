@@ -1,0 +1,14 @@
+.NewFeed form {
+    padding-bottom: 15px;
+  }
+  
+  .NewFeed form textarea {
+    height: 300px;
+    font-size: 30px;
+  }
+
+  /* .NewFeed .discription form textarea {
+    height: 300px;
+    font-size: 24px;
+  } */
+  
