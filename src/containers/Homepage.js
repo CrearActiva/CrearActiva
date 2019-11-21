@@ -31,7 +31,7 @@ export default class Homepage extends Component {
     }
 
     try {
-      let feedval = await this.getfeeds();
+      let feedval = await this.getFeeds();
       feedval = JSON.parse(feedval.body);
       this.setState({ feeds: feedval });
     } catch (e) {
@@ -41,7 +41,7 @@ export default class Homepage extends Component {
     this.setState({ isLoading: false });
   }
 
-  getfeeds() {
+  getFeeds() {
     return API.get("posts", "/feeds");
   }
 
@@ -53,7 +53,7 @@ export default class Homepage extends Component {
         i !== 0
           ? <LinkContainer
               key={feed}
-              to={`/feeds/${feed}`}
+              to={`/feeds/${feed.feedId}`}
             >
               <ListGroupItem header={feed.feedId}>
                 {feed.description}

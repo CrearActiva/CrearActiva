@@ -8,7 +8,7 @@ import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
 
-export default class ListPost extends Component {   //maybe fix to be ListFeed
+export default class ListFeed extends Component {   
   constructor(props) {
     super(props);
 
@@ -18,10 +18,10 @@ export default class ListPost extends Component {   //maybe fix to be ListFeed
     };
 
     this.myInit = { // OPTIONAL
-        headers: {}, // OPTIONAL
-        response: true, // OPTIONAL (return the entire Axios response object instead of only response.data)
+        // headers: {}, // OPTIONAL
+        // response: true, // OPTIONAL (return the entire Axios response object instead of only response.data)
         queryStringParameters: {  // OPTIONAL
-            name: 'param'
+            feedId: 'testFeed'
         }
     };
 
@@ -33,7 +33,9 @@ export default class ListPost extends Component {   //maybe fix to be ListFeed
     }
 
     try {
-      const posts = await this.posts();
+      console.log(this.props.match.params.id);
+      const posts = await this.getPosts();
+      console.log(posts);
       this.setState({ posts });
     } catch (e) {
       alert(e);
@@ -42,16 +44,13 @@ export default class ListPost extends Component {   //maybe fix to be ListFeed
     this.setState({ isLoading: false });
   }
 
-  posts() {
-    API.get("posts", "/posts","").then(response => {
-      return response;
-    }).catch(error => {
-      alert(error.response);
-    });
+  getPosts() {
+    return API.get("posts", "posts/testPost5");
   }
 
 
   renderPostsList(posts) {
+    // console.log(posts);
     return [{}].concat(posts).map(
       (post, i) =>
         i !== 0
