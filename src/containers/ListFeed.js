@@ -33,9 +33,9 @@ export default class ListFeed extends Component {
     }
 
     try {
-      console.log(this.props.match.params.id);
-      const posts = await this.getPosts();
-      console.log(posts);
+      let posts = await this.getPosts();
+      posts = JSON.parse(posts.body);
+      console.log(posts[1])
       this.setState({ posts });
     } catch (e) {
       alert(e);
@@ -45,7 +45,7 @@ export default class ListFeed extends Component {
   }
 
   getPosts() {
-    return API.get("posts", "posts/testPost5");
+    return API.get("posts", "/posts", this.myInit);
   }
 
 
@@ -59,7 +59,7 @@ export default class ListFeed extends Component {
               to={`/posts/${post.postId}`}
             >
               <ListGroupItem header={post.content.trim().split("\n")[0]}>
-                {"Created: " + new Date(post.createdAt).toLocaleString()}
+                {"Created: " + new Date(post.timestamp).toLocaleString()}
               </ListGroupItem>
             </LinkContainer>
           : <LinkContainer
