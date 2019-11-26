@@ -15,7 +15,9 @@ export default class newpost extends Component {
 
     this.state = {
       isLoading: null,
-      content: ""
+      postId: "",
+      content: "",
+      feedId: ""
     };
   }
 
@@ -41,25 +43,24 @@ export default class newpost extends Component {
       return;
     }
 
-    this.setState({ isLoading: true });
-
+    this.setState({ isLoading: true});
+    
     try {
       const attachment = this.file
         ? await s3Upload(this.file)
         : null;
 
       //test
-      
       await this.createPost({
         content: this.state.content,
         attachment,
         pathParameters: {
-          feedId: "testFeed",   //fix it later, needed to pass a para here!
-          postId: "testPost5"   //typed in by user
+          feedId: this.state.feedId,   //fix it later, needed to pass a para here!    //fixed
+          postId: this.state.postId   //typed in by user    //fixed
         }
       });
 
-      this.props.history.push("/");   //what's this history doing
+      this.props.history.push('/homepage/');   
     } catch (e) {
       alert(e);
       this.setState({ isLoading: false });
@@ -75,14 +76,27 @@ export default class newpost extends Component {
 
 
   render() {
+    // console.log(this.props.history.location.state.feedId);
+    this.state.feedId = this.props.history.location.state.feedId;
+    console.log(this.state.feedId);
+
     return (
       <div className="newpost">
         <form onSubmit={this.handleSubmit}>
+        <FormGroup controlId="postId">
+            <FormControl
+              onChange={this.handleChange}
+              value={this.state.postId}
+              componentClass="textarea"
+              placeholder="Please type in yout post ID."
+            />
+          </FormGroup>
           <FormGroup controlId="content">
             <FormControl
               onChange={this.handleChange}
               value={this.state.content}
               componentClass="textarea"
+              placeholder="Please type in your contene."
             />
           </FormGroup>
           <FormGroup controlId="file">

@@ -21,7 +21,7 @@ export default class ListFeed extends Component {
         // headers: {}, // OPTIONAL
         // response: true, // OPTIONAL (return the entire Axios response object instead of only response.data)
         queryStringParameters: {  // OPTIONAL
-            feedId: 'testFeed'
+            feedId: ""
         }
     };
 
@@ -33,9 +33,11 @@ export default class ListFeed extends Component {
     }
 
     try {
+      // console.log(this.props);
+      this.myInit.queryStringParameters.feedId = this.props.match.params.id;
       let posts = await this.getPosts();
       posts = JSON.parse(posts.body);
-      console.log(posts[1])
+      // console.log(posts[1])
       this.setState({ posts });
     } catch (e) {
       alert(e);
@@ -50,10 +52,12 @@ export default class ListFeed extends Component {
 
 
   renderPostsList(posts) {
-    // console.log(posts);
+    this.props.history.location.state = "testFeed";
+
+    console.log(this.props);
     return [{}].concat(posts).map(
       (post, i) =>
-        i !== 0
+          i !== 0
           ? <LinkContainer
               key={post.postId}
               to={`/posts/${post.postId}`}
@@ -64,11 +68,14 @@ export default class ListFeed extends Component {
             </LinkContainer>
           : <LinkContainer
               key="new"
-              to="/posts/new"
+              to={{
+                pathname: "/posts/new",
+                state: {feedId: this.myInit.queryStringParameters.feedId}
+              }}    //use this nested json to pass params
             >
-              <ListGroupItem>
+              <ListGroupItem> 
                 <h4>
-                  <b>{"\uFF0B"}</b> Create a new post
+                  <b>{"\uFF0B"}</b> Create a new posts
                 </h4>
               </ListGroupItem>
             </LinkContainer>
