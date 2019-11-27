@@ -96,7 +96,7 @@ export default class newpost extends Component {
               onChange={this.handleChange}
               value={this.state.content}
               componentClass="textarea"
-              placeholder="Please type in your contene."
+              placeholder="Please type in your content."
             />
           </FormGroup>
           <FormGroup controlId="file">

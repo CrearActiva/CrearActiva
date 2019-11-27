@@ -50,12 +50,14 @@ export default class ListFeed extends Component {
     return API.get("posts", "/posts", this.myInit);
   }
 
-
   renderPostsList(posts) {
-    this.props.history.location.state = "testFeed";
+    // this.props.history.location.state = "testFeed";
 
-    console.log(this.props);
-    return [{}].concat(posts).map(
+    console.log(posts);
+    let tmp_posts = [{}].concat(posts).sort((post_a, post_b) => post_a.timestamp - post_b.timestamp);
+    console.log(tmp_posts);
+
+    return tmp_posts.map(
       (post, i) =>
           i !== 0
           ? <LinkContainer
