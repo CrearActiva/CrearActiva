@@ -132,24 +132,18 @@ export default class Notes extends Component {
           i !== 0
           ? <LinkContainer
               key={comment.commentId}
+              to={{
+                pathname: "/homepage",
+                state: {
+                  CommentId: comment.commentId
+                }
+              }}
             >
               <ListGroupItem header={comment.content.trim().split("\n")[0]}>
                 {"Created: " + new Date(comment.timestamp).toLocaleString()}
               </ListGroupItem>
             </LinkContainer>
-          : <LinkContainer
-              key="new"
-              to={{
-                pathname: "/posts/new",
-                state: {feedId: this.myInit.queryStringParameters.feedId}
-              }}    //use this nested json to pass params
-            >
-              <ListGroupItem> 
-                <h4>
-                  <b>{"\uFF0B"}</b> Create a new comment
-                </h4>
-              </ListGroupItem>
-            </LinkContainer>
+          : <h1>hello, No.0 comment.</h1>
     );
     // return (<h1>{ comments.commentId }</h1>);
     // return null;
@@ -171,7 +165,7 @@ export default class Notes extends Component {
     return (
       <div className="Post">
         {this.props.isAuthenticated && this.renderPostContent(this.state.content)}
-        {/* {this.props.isAuthenticated && this.renderCommentsList(this.state.comments)} */}
+        {this.props.isAuthenticated && this.renderCommentsList(this.state.comments)}
       </div>
     );
   }
