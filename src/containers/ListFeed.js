@@ -31,19 +31,22 @@ export default class ListFeed extends Component {
     if (!this.props.isAuthenticated) {
       return;
     }
-
+    
     try {
-      // console.log(this.props);
       this.myInit.queryStringParameters.feedId = this.props.match.params.id;
+
       let posts = await this.getPosts();
       posts = JSON.parse(posts.body);
-      // console.log(posts[1])
+
+      // console.log("hello in didmount");
       this.setState({ posts });
+      // console.log("hello, after set posts state.");
     } catch (e) {
       alert(e);
     }
 
     this.setState({ isLoading: false });
+    // console.log("hello, last setting state.");
   }
 
   getPosts() {
@@ -51,18 +54,20 @@ export default class ListFeed extends Component {
   }
 
   renderPostsList(posts) {
-    // this.props.history.location.state = "testFeed";
-
-    console.log(posts);
     let tmp_posts = [{}].concat(posts).sort((post_a, post_b) => post_a.timestamp - post_b.timestamp);
-    console.log(tmp_posts);
-
+    
     return tmp_posts.map(
       (post, i) =>
           i !== 0
           ? <LinkContainer
               key={post.postId}
-              to={`/posts/${post.postId}`}
+              to={{
+                  pathname: `/posts/${post.postId}`,
+                  state: {
+                    feedId: this.myInit.queryStringParameters.feedId,
+                    postId: post.postId
+                   }
+               }}
             >
               <ListGroupItem header={post.content.trim().split("\n")[0]}>
                 {"Created: " + new Date(post.timestamp).toLocaleString()}
@@ -105,6 +110,7 @@ export default class ListFeed extends Component {
   }
 
   render() {
+    // console.log(this.state);
     return (
       <div className="Home">
         {this.props.isAuthenticated ? this.renderPosts() : this.renderLander()}
