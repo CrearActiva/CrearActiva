@@ -76,7 +76,6 @@ export default class newpost extends Component {
 
 
   render() {
-    // console.log(this.props.history.location.state.feedId);
     this.state.feedId = this.props.history.location.state.feedId;
     console.log(this.state.feedId);
 

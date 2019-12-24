@@ -91,7 +91,7 @@ export default class ListFeed extends Component {
 
   renderLander() {
     return (
-      <div className="lander">
+      <div className="Feedlander">
         <h1>Scratch</h1>
         <p>CrearActiva</p>
       </div>
@@ -112,7 +112,7 @@ export default class ListFeed extends Component {
   render() {
     // console.log(this.state);
     return (
-      <div className="Home">
+      <div className="Listfeed">
         {this.props.isAuthenticated ? this.renderPosts() : this.renderLander()}
       </div>
     );

@@ -60,7 +60,7 @@ export default class Homepage extends Component {
               </ListGroupItem>
             </LinkContainer>
           : <LinkContainer
-              key="new"
+              key="newFeed"
               to="/feeds/new"
             >
               <ListGroupItem>

@@ -24,7 +24,8 @@ export default ({ childProps }) =>
     <UnauthenticatedRoute path="/signup" exact component={Signup} props={childProps} />
     <AuthenticatedRoute path="/posts/new" exact component={NewPost} props={childProps} />
     <AuthenticatedRoute path="/feeds/new" exact component={NewFeed} props={childProps} />
-
+    {/* <AuthenticatedRoute path="/comments/new" exact component={NewComment} props={childProps} /> */}
+ 
     <AuthenticatedRoute path="/homepage" exact component={Homepage} props={childProps} />
     <AuthenticatedRoute path="/posts/:id" exact component={Post} props={childProps} />
     <AuthenticatedRoute path="/feeds/:id" exact component={ListFeed} props={childProps} />
