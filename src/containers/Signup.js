@@ -16,8 +16,10 @@ export default class Signup extends Component {
 
     this.state = {
       isLoading: false,
+      connfirmation_page: false,
       username: "",
       password: "",
+      name: "",
       confirmPassword: "",
       confirmationCode: "",
       newUser: null
@@ -48,17 +50,19 @@ export default class Signup extends Component {
     this.setState({ isLoading: true });
 
     try {
-      const newUser = await Auth.signUp({
+      const user = await Auth.signUp({
         username: this.state.username,
-        password: this.state.password
+        password: this.state.password,
+        attributes: {
+        email: this.state.email,
+        name: this.state.name
+        }
       });
-      this.setState({
-        newUser
-      });
+      console.log(user);
+      this.setState({ newUser: user});
     } catch (e) {
       alert(e.message);
     }
-
     this.setState({ isLoading: false });
   }
 
@@ -79,6 +83,17 @@ export default class Signup extends Component {
     }
   }
 
+  handleResendSignup = async event => {
+    Auth.resendSignUp(this.state.username).then(() => {
+      console.log('code resent successfully');
+    }).catch(e => {
+      console.log(e);
+    });
+  }
+
+  handleRedirectConfirmation = async event => {
+    this.setState({ newUser: this.state.username});
+  }
 
   renderConfirmationForm() {
     return (
@@ -91,7 +106,7 @@ export default class Signup extends Component {
             value={this.state.confirmationCode}
             onChange={this.handleChange}
           />
-          <HelpBlock>Please check your username for the code.</HelpBlock>
+          <HelpBlock>We've sent a confirmation code to your email, please check it.</HelpBlock>
         </FormGroup>
         <LoaderButton
           block
@@ -99,8 +114,19 @@ export default class Signup extends Component {
           disabled={!this.validateConfirmationForm()}
           type="submit"
           isLoading={this.state.isLoading}
+          onclick = {this.handleConfirmationSubmit}
           text="Verify"
           loadingText="Verifying…"
+        />
+        <LoaderButton
+          block
+          bsSize="large"
+          disabled={!this.validateConfirmationForm()}
+          type="submit"
+          isLoading={this.state.isLoading}
+          onclick = {this.resendSignUp}
+          text="Resend the code"
+          loadingText="Resending...."
         />
       </form>
     );
@@ -115,6 +141,24 @@ export default class Signup extends Component {
             autoFocus
             type="text"
             value={this.state.username}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
+        <FormGroup controlId="name" bsSize="large">
+          <ControlLabel>Name</ControlLabel>
+          <FormControl
+            autoFocus
+            type="text"
+            value={this.state.name}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
+        <FormGroup controlId="email" bsSize="large">
+          <ControlLabel>Email</ControlLabel>
+          <FormControl
+            autoFocus
+            type="email"
+            value={this.state.email}
             onChange={this.handleChange}
           />
         </FormGroup>
@@ -138,10 +182,21 @@ export default class Signup extends Component {
           block
           bsSize="large"
           disabled={!this.validateForm()}
+          onclick={this.handleSubmit}
           type="submit"
           isLoading={this.state.isLoading}
           text="Signup"
           loadingText="Signing up…"
+        />
+        <LoaderButton
+          block
+          bsSize="large"
+          disabled={!this.validateForm()}
+          onclick={this.handleRedirectConfirmation}
+          type="button"
+          isLoading={this.state.isLoading}
+          text="I want to verify my account"
+          loadingText="Redirecting you to account confirmation...."
         />
       </form>
     );

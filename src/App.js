@@ -14,7 +14,10 @@ class App extends Component {
     this.state = {
       isAuthenticated: false,
       adminIsAuthenticated: false,
-      isAuthenticating: true
+      isAuthenticating: true,
+      user: [],
+      currentCredentials: [],
+      currentSession: []
     };
   }
 
@@ -35,12 +38,13 @@ class App extends Component {
     this.setState({ isAuthenticated: authenticated });
   }
 
-  adminHasAuthenticated =  authenticated => {
-    this.setState({ isAuthenticated: authenticated})
+  adminHasAuthenticated = authenticated => {
+    this.setState({ adminIsAuthenticated: authenticated});
   }
   handleLogout = async event => {
     await Auth.signOut();
     this.userHasAuthenticated(false);
+    this.adminHasAuthenticated(false);
     this.props.history.push("/");
   }
 

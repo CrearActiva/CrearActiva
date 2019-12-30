@@ -47,6 +47,7 @@ export default class Homepage extends Component {
 
 
   renderFeedsList(feeds) {
+    console.log(this.props.adminIsAuthenticated);
     // console.log(feeds);
     return [{}].concat(feeds).map(
       (feed, i) =>
@@ -59,7 +60,7 @@ export default class Homepage extends Component {
                 {feed.description}
               </ListGroupItem>
             </LinkContainer>
-          : <LinkContainer
+          : [<div>{this.props.adminIsAuthenticated ? <LinkContainer
               key="newFeed"
               to="/feeds/new"
             >
@@ -68,7 +69,7 @@ export default class Homepage extends Component {
                   <b>{"\uFF0B"}</b> Create a new feed
                 </h4>
               </ListGroupItem>
-            </LinkContainer>
+          </LinkContainer>:<div></div>} </div>]
     );
   }
 
