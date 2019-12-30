@@ -15,9 +15,7 @@ class App extends Component {
       isAuthenticated: false,
       adminIsAuthenticated: false,
       isAuthenticating: true,
-      user: [],
-      currentCredentials: [],
-      currentSession: []
+      user: ""
     };
   }
 
@@ -38,6 +36,10 @@ class App extends Component {
     this.setState({ isAuthenticated: authenticated });
   }
 
+  updateUser = username => {
+    this.setState({ user: username});
+  }
+
   adminHasAuthenticated = authenticated => {
     this.setState({ adminIsAuthenticated: authenticated});
   }
@@ -46,6 +48,7 @@ class App extends Component {
     this.userHasAuthenticated(false);
     this.adminHasAuthenticated(false);
     this.props.history.push("/");
+    this.updateUser("");
   }
 
   render() {

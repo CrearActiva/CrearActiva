@@ -62,6 +62,7 @@ export default class Login extends Component {
         //Account is admin
         console.log("Account is admin");
         this.props.adminHasAuthenticated(true);
+        this.props.updateUser(this.state.username);
       }
       else{
         //Account is regular user
