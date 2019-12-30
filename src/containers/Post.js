@@ -111,11 +111,10 @@ export default class Notes extends Component {
         pathParameters: {
           commentId: String(Date.now()),
           postId: this.state.postId,
-          userId: this.props.username
         },
         requestContext: {
           identity: {
-            cognitoIdentityId: "USER-SUB-1234-exit1"
+            cognitoIdentityId: this.props.userName 
           }
         }
       });
@@ -226,7 +225,7 @@ export default class Notes extends Component {
                 />
               </ListGroupItem>
 
-          : [<div>{this.props.adminIsAuthenticated ? <LinkContainer
+          : <LinkContainer
           key="new"
           to={{
             pathname: "/feed/new",
@@ -238,7 +237,7 @@ export default class Notes extends Component {
               <b>{"\uFF0B"}</b> Create a new comment
             </h4>
           </ListGroupItem>
-        </LinkContainer>:<div></div>} </div>]
+        </LinkContainer>
     );
   }
 
