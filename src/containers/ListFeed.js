@@ -69,7 +69,7 @@ export default class ListFeed extends Component {
                    }
                }}
             >
-              <ListGroupItem header={post.content.trim().split("\n")[0]}>
+              <ListGroupItem header={post.postId.trim().split("\n")[0]}>
                 {"Created: " + new Date(post.timestamp).toLocaleString()}
               </ListGroupItem>
             </LinkContainer>

@@ -53,6 +53,8 @@ export default class Login extends Component {
 
     this.setState({ isLoading: true });
     try {
+      // set the userId of the current user into props
+      this.props.setUserId(this.state.username);
       const user = await Auth.signIn(this.state.username, this.state.password);
       this.props.userHasAuthenticated(true);
       const idToken = user.signInUserSession.idToken;
@@ -62,7 +64,7 @@ export default class Login extends Component {
         //Account is admin
         console.log("Account is admin");
         this.props.adminHasAuthenticated(true);
-        this.props.updateUser(this.state.username);
+        // this.props.updateUser(this.state.username);
       }
       else{
         //Account is regular user
@@ -91,6 +93,7 @@ export default class Login extends Component {
   }
 
   render() {
+    console.log(this.props);
     return (
       <div className="Login">
         {/* user login button */}

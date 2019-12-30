@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { API, Storage } from "aws-amplify";
-import { PageHeader, FormGroup, FormControl, ControlLabel, ListGroup, ListGroupItem } from "react-bootstrap";
+import { PageHeader, FormGroup, FormControl, ControlLabel, ListGroup, ListGroupItem, Button } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import config from "../config";
@@ -111,6 +111,7 @@ export default class Notes extends Component {
         pathParameters: {
           commentId: String(Date.now()),
           postId: this.state.postId,
+          userId: this.props.username
         },
         requestContext: {
           identity: {
@@ -134,9 +135,10 @@ export default class Notes extends Component {
     });
   }
   
-  handleDelete = async event => {
+  handlePostDelete = async event => {
     event.preventDefault();
 
+    console.log("Trying to delete a single post and all sub comments!!!");
     const confirmed = window.confirm(
       "Are you sure you want to delete this post?"
     );
@@ -152,10 +154,54 @@ export default class Notes extends Component {
     return this.state.content.length > 0;
   }
 
+  // handler when click on delete a single comment
+  handleCommentDelete = (comment) => async event => {
+    event.preventDefault();
+
+    console.log(event);
+    console.log("Trying to delete a single comment!!!");
+    const confirmed = window.confirm(
+      "Are you sure you want to delete thist single comment?"
+    )
+
+    console.log(confirmed);
+    if (!confirmed) {
+      return;
+    }
+    
+    console.log(comment);
+
+    try {
+      await this.deleteComment(comment);
+    } catch(e) {
+      alert(e);
+    }
+  }
+
+  deleteComment(comment) {
+    console.log(comment);
+    // console.log(`/comments/${comment.postId}`);
+    let rtval = API.del("posts", `/comments/${comment.commentId}`, {
+      queryStringParameters: {
+        commentId: comment.commentId,
+        postId: comment.postId
+      }
+    });
+    console.log(rtval);
+    return;
+  }
+
+  renderPostId(postId){
+    return (
+      <div>
+        <h1>{postId}</h1>
+      </div>
+    )
+  }
   renderPostContent(content) {
     return (
       <div className="Content">
-        <h1>{content}</h1>
+        {content}
       </div>
     );
   }
@@ -167,9 +213,32 @@ export default class Notes extends Component {
       (comment, i) =>
           i !== 0
           ?   <ListGroupItem header={comment.content.trim().split("\n")[0]}>
-                {"Created: " + new Date(comment.timestamp).toLocaleString()}
+                {/* display who and when created the comment */}
+                {"Created by " + comment.userId + " at " + new Date(comment.timestamp).toLocaleString()}
+                <LoaderButton 
+                  block
+                  bsSize="large"
+                  type="submit"   
+                  text="Delete"   
+                  variant="outline-light" 
+                  onClick={this.handleCommentDelete(comment)}
+                  id="commentDelete"
+                />
               </ListGroupItem>
-          : null
+
+          : <LinkContainer
+          key="new"
+          to={{
+            pathname: "/feed/new",
+            state: {feedId: this.myInit.queryStringParameters.feedId}
+          }}    //use this nested json to pass params
+        >
+          <ListGroupItem> 
+            <h4>
+              <b>{"\uFF0B"}</b> Create a new comment
+            </h4>
+          </ListGroupItem>
+        </LinkContainer>
     );
   }
 
@@ -204,8 +273,10 @@ export default class Notes extends Component {
   }
 
   render() {
+    console.log(this.props);
     return (
       <div className="Post">
+        {this.props.isAuthenticated && this.renderPostId(this.state.postId)}
         {this.props.isAuthenticated && this.renderPostContent(this.state.content)}
         {this.props.isAuthenticated && this.renderComments()}
       </div>

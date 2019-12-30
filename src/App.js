@@ -11,6 +11,7 @@ import { Link, withRouter } from "react-router-dom";
 class App extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       isAuthenticated: false,
       adminIsAuthenticated: false,
@@ -40,9 +41,14 @@ class App extends Component {
     this.setState({ user: username});
   }
 
+  getUser = () => {
+    return this.state.user;
+  }
+
   adminHasAuthenticated = authenticated => {
     this.setState({ adminIsAuthenticated: authenticated});
   }
+
   handleLogout = async event => {
     await Auth.signOut();
     this.userHasAuthenticated(false);
@@ -56,7 +62,9 @@ class App extends Component {
       isAuthenticated: this.state.isAuthenticated,
       adminIsAuthenticated: this.state.adminIsAuthenticated,
       userHasAuthenticated: this.userHasAuthenticated,
-      adminHasAuthenticated: this.adminHasAuthenticated
+      adminHasAuthenticated: this.adminHasAuthenticated,
+      setUserId: this.updateUser,
+      userName: this.state.user
     };
     return (
       !this.state.isAuthenticating &&
