@@ -213,7 +213,7 @@ export default class Notes extends Component {
       (comment, i) =>
           i !== 0
           ?   <ListGroupItem header={comment.content.trim().split("\n")[0]}>
-                {/* display who and when created the comment */}
+                {/* display the username of a single comment. */}
                 {"Created by " + comment.userId + " at " + new Date(comment.timestamp).toLocaleString()}
                 <LoaderButton 
                   block
