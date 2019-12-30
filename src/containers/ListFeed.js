@@ -73,7 +73,7 @@ export default class ListFeed extends Component {
                 {"Created: " + new Date(post.timestamp).toLocaleString()}
               </ListGroupItem>
             </LinkContainer>
-          : <LinkContainer
+          : [<div>{this.props.adminIsAuthenticated ? <LinkContainer
               key="new"
               to={{
                 pathname: "/posts/new",
@@ -85,7 +85,7 @@ export default class ListFeed extends Component {
                   <b>{"\uFF0B"}</b> Create a new posts
                 </h4>
               </ListGroupItem>
-            </LinkContainer>
+            </LinkContainer>:<div></div>} </div>]
     );
   }
 

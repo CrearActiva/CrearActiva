@@ -226,7 +226,7 @@ export default class Notes extends Component {
                 />
               </ListGroupItem>
 
-          : <LinkContainer
+          : [<div>{this.props.adminIsAuthenticated ? <LinkContainer
           key="new"
           to={{
             pathname: "/feed/new",
@@ -238,7 +238,7 @@ export default class Notes extends Component {
               <b>{"\uFF0B"}</b> Create a new comment
             </h4>
           </ListGroupItem>
-        </LinkContainer>
+        </LinkContainer>:<div></div>} </div>]
     );
   }
 
