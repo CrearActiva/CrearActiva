@@ -9,7 +9,6 @@ import LoaderButton from "../components/LoaderButton";
 import "./Signup.css";
 import { Auth } from "aws-amplify";
 
-
 export default class Signup extends Component {
   constructor(props) {
     super(props);
@@ -84,6 +83,7 @@ export default class Signup extends Component {
   }
 
   handleResendSignup = async event => {
+    console.log("Request to resend code");
     Auth.resendSignUp(this.state.username).then(() => {
       console.log('code resent successfully');
     }).catch(e => {
@@ -97,7 +97,17 @@ export default class Signup extends Component {
 
   renderConfirmationForm() {
     return (
+      <div>
       <form onSubmit={this.handleConfirmationSubmit}>
+      <FormGroup controlId="username" bsSize="large">
+          <ControlLabel>Username</ControlLabel>
+          <FormControl
+            autoFocus
+            type="text"
+            value={this.state.username}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
         <FormGroup controlId="confirmationCode" bsSize="large">
           <ControlLabel>Confirmation Code</ControlLabel>
           <FormControl
@@ -118,22 +128,24 @@ export default class Signup extends Component {
           text="Verify"
           loadingText="Verifying…"
         />
-        <LoaderButton
-          block
-          bsSize="large"
-          disabled={!this.validateConfirmationForm()}
-          type="submit"
-          isLoading={this.state.isLoading}
-          onclick = {this.resendSignUp}
-          text="Resend the code"
-          loadingText="Resending...."
-        />
       </form>
+      <LoaderButton
+        block
+        bsSize="large"
+        disabled={!this.validateConfirmationForm()}
+        type="button"
+        isLoading={this.state.isLoading}
+        onclick = {this.handleResendSignup}
+        text="Resend the code"
+        loadingText="Resending...."
+      />
+    </div>
     );
   }
 
   renderForm() {
     return (
+      <div>
       <form onSubmit={this.handleSubmit}>
         <FormGroup controlId="username" bsSize="large">
           <ControlLabel>Username</ControlLabel>
@@ -188,17 +200,17 @@ export default class Signup extends Component {
           text="Signup"
           loadingText="Signing up…"
         />
-        <LoaderButton
-          block
-          bsSize="large"
-          disabled={!this.validateForm()}
-          onclick={this.handleRedirectConfirmation}
-          type="button"
-          isLoading={this.state.isLoading}
-          text="I want to verify my account"
-          loadingText="Redirecting you to account confirmation...."
-        />
       </form>
+      <LoaderButton
+        bsSize="large"
+        disabled={!this.validateForm()}
+        onClick={this.handleRedirectConfirmation}
+        type="button"
+        isLoading={this.state.isLoading}
+        text="I want to verify my account"
+        loadingText="Redirecting you to account confirmation...."
+      />
+      </div>
     );
   }
 

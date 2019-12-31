@@ -65,7 +65,7 @@ export default class NewFeed extends Component {
             />
           </FormGroup>
           <FormGroup controlId="discription">
-            <ControlLabel>Discription</ControlLabel>
+            <ControlLabel>Description</ControlLabel>
             <FormControl 
               onChange={this.handleChange}
               value={this.state.discription}

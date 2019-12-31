@@ -160,33 +160,32 @@ export default class Notes extends Component {
     console.log(event);
     console.log("Trying to delete a single comment!!!");
     const confirmed = window.confirm(
-      "Are you sure you want to delete thist single comment?"
+      "Are you sure you want to delete this single comment?"
     )
-
-    console.log(confirmed);
     if (!confirmed) {
       return;
     }
-    
-    console.log(comment);
-
+    this.setState({ isLoading: true });
     try {
-      await this.deleteComment(comment);
+      let rtval = await API.del("posts", `/comments/${comment.commentId}`, {
+        body:{
+          pathParameters: {
+            commentId: comment.commentId,
+            postId: comment.postId
+          }
+        }
+      });
+      console.log("return value");
+      console.log(rtval);
     } catch(e) {
       alert(e);
     }
+    this.setState({ isLoading: false });
   }
 
   deleteComment(comment) {
     console.log(comment);
     // console.log(`/comments/${comment.postId}`);
-    let rtval = API.del("posts", `/comments/${comment.commentId}`, {
-      queryStringParameters: {
-        commentId: comment.commentId,
-        postId: comment.postId
-      }
-    });
-    console.log(rtval);
     return;
   }
 
@@ -225,19 +224,7 @@ export default class Notes extends Component {
                 />
               </ListGroupItem>
 
-          : <LinkContainer
-          key="new"
-          to={{
-            pathname: "/feed/new",
-            state: {feedId: this.myInit.queryStringParameters.feedId}
-          }}    //use this nested json to pass params
-        >
-          <ListGroupItem> 
-            <h4>
-              <b>{"\uFF0B"}</b> Create a new comment
-            </h4>
-          </ListGroupItem>
-        </LinkContainer>
+          : null
     );
   }
 
