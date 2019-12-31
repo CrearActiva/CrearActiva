@@ -6,6 +6,7 @@ import LoaderButton from "../components/LoaderButton";
 import config from "../config";
 import "./Post.css";
 import { thisTypeAnnotation } from "@babel/types";
+import { s3Upload } from "../libs/awsLib";
 
 export default class Notes extends Component {
   constructor(props) {
@@ -16,6 +17,7 @@ export default class Notes extends Component {
     this.state = {
         isLoading: null,
         isDeleting: null,
+        post: null,
         postId: "",
         feedId: "",
         content: "",
@@ -59,6 +61,7 @@ export default class Notes extends Component {
       // this.state.content = post.content;
       // this.state.attachmentURL = attachmentURL;
       this.setState({
+        post: post,
         content: post.content,
         attachmentURL: attachmentURL,
         feedId: this.props.history.location.state.feedId,
@@ -189,11 +192,105 @@ export default class Notes extends Component {
     return;
   }
 
-  renderPostId(postId){
+  savePost(post) {
+    console.log(this.state.postId);
+    console.log(post);
+    return API.put("posts", `/posts/${this.state.postId}`, {
+      body: post,
+      pathParameters: {
+        feedId: this.state.feedId,
+        postId: this.state.postId
+      },
+      requestContext: {
+        identity: {
+          cognitoIdentityId: this.props.userName 
+        }
+      }
+    })
+  }
+  
+  handleUpdatePost = async event => {
+    let attachment = null;
+    event.preventDefault();
+
+    if (this.file && this.file.size > config.MAX_ATTACHMENT_SIZE) {
+      alert(`Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE/1000000} MB.`);
+      return;
+    }
+
+    this.setState({ isLoading: true });
+
+    try {
+      if (this.file) {
+        attachment = await s3Upload(this.file);
+      }
+
+
+      let rtval = await this.savePost({
+            content: this.state.content,
+            attachment: attachment
+      });
+
+      console.log(rtval);
+      this.props.history.push("/");
+    } catch (e) {
+      alert(e);
+      this.setState({ isLoading: false });
+    }
+  }
+
+  renderPostId(){
+    console.log(this.state.post);
     return (
-      <div>
-        <h1>{postId}</h1>
-      </div>
+      <div className="Post">
+      {this.props.adminIsAuthenticated && this.state.post &&
+        <form onSubmit={this.handleUpdatePost}>
+          <FormGroup controlId="content">
+            <FormControl
+              onChange={this.handleChange}
+              value={this.state.content}
+              componentClass="textarea"
+            />
+          </FormGroup>
+          {this.state.post.attachment &&
+            <FormGroup>
+              <ControlLabel>Attachment</ControlLabel>
+              <FormControl.Static>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={this.state.attachmentURL}
+                >
+                  {this.formatFilename(this.state.post.attachment)}
+                </a>
+              </FormControl.Static>
+            </FormGroup>}
+          <FormGroup controlId="file">
+            {!this.state.post.attachment &&
+              <ControlLabel>Attachment</ControlLabel>}
+            <FormControl onChange={this.handleFileChange} type="file" />
+          </FormGroup>
+          <LoaderButton
+            block
+            bsStyle="primary"
+            bsSize="large"
+            disabled={!this.validateForm()}
+            type="submit"
+            isLoading={this.state.isLoading}
+            text="Save"
+            loadingText="Saving…"
+          />
+          {/* <LoaderButton
+            block
+            bsStyle="danger"
+            bsSize="large"
+            isLoading={this.state.isDeleting}
+            onClick={this.handleDelete}
+            text="Delete"
+            loadingText="Deleting…"
+          /> */}
+        </form>}
+    </div>
     )
   }
   renderPostContent(content) {
@@ -262,7 +359,7 @@ export default class Notes extends Component {
     console.log(this.props);
     return (
       <div className="Post">
-        {this.props.isAuthenticated && this.renderPostId(this.state.postId)}
+        {this.props.isAuthenticated && this.renderPostId()}
         {this.props.isAuthenticated && this.renderPostContent(this.state.content)}
         {this.props.isAuthenticated && this.renderComments()}
       </div>
