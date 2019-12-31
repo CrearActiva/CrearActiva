@@ -14,6 +14,7 @@ export default class ListFeed extends Component {
 
     this.state = {
       isLoading: true,
+      feedId: "",
       posts: []
     };
 
@@ -34,7 +35,7 @@ export default class ListFeed extends Component {
     
     try {
       this.myInit.queryStringParameters.feedId = this.props.match.params.id;
-
+      this.setState({feedId: this.props.match.params.id});
       let posts = await this.getPosts();
       posts = JSON.parse(posts.body);
 
@@ -101,7 +102,7 @@ export default class ListFeed extends Component {
   renderPosts() {
     return (
       <div className="posts">
-        <PageHeader>Your Posts</PageHeader>
+        <PageHeader>{this.state.feedId}</PageHeader>
         <ListGroup>
           {!this.state.isLoading && this.renderPostsList(this.state.posts)}
         </ListGroup>
