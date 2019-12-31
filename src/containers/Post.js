@@ -123,12 +123,11 @@ export default class Notes extends Component {
       });
 
       console.log(this.props.history);
-      this.props.history.goBack();
-
+      window.location.reload();
     } catch (e) {
       alert(e);
-      this.setState({ isLoading: false });
     }
+    this.setState({ isLoading: false });
   }
 
   handleChange = event => {
@@ -137,19 +136,32 @@ export default class Notes extends Component {
     });
   }
   
-  handlePostDelete = async event => {
+  handlePostDelete = (postId) => async event => {
     event.preventDefault();
-
     console.log("Trying to delete a single post and all sub comments!!!");
     const confirmed = window.confirm(
       "Are you sure you want to delete this post?"
     );
-
     if (!confirmed) {
       return;
     }
-
     this.setState({ isDeleting: true });
+    try {
+      let rtval = await API.del("posts", `/posts/${postId}`, {
+        body:{
+          pathParameters: {
+            feedId: this.state.feedId,
+            postId: postId
+          }
+        }
+      });
+      console.log("return value");
+      console.log(rtval);
+      this.props.history.push(`/feeds/${this.state.feedId}`);
+    } catch(e) {
+      alert(e);
+      this.setState({ isDeleting: false });
+    }
   }
 
   validateForm() {
@@ -328,7 +340,7 @@ export default class Notes extends Component {
             disabled={!this.validateForm()}
             type="submit"
             isLoading={this.state.isLoading}
-            text="Create"
+            text="Post comment"
             loadingText="Creating…"
           />
         </form>
