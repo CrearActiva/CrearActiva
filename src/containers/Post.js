@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { API, Storage } from "aws-amplify";
-import { PageHeader, FormGroup, FormControl, ControlLabel, ListGroup, ListGroupItem, Button } from "react-bootstrap";
+import { PageHeader, FormGroup, FormControl, ControlLabel, ListGroup, ListGroupItem, Image } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import config from "../config";
@@ -254,15 +254,11 @@ export default class Notes extends Component {
           </FormGroup>
           {this.state.post.attachment &&
             <FormGroup>
-              <ControlLabel>Attachment</ControlLabel>
               <FormControl.Static>
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={this.state.attachmentURL}
-                >
-                  {this.formatFilename(this.state.post.attachment)}
-                </a>
+                <Image
+                  src={this.state.attachmentURL}
+                  responsive
+                />
               </FormControl.Static>
             </FormGroup>}
           <FormGroup controlId="file">
@@ -280,26 +276,11 @@ export default class Notes extends Component {
             text="Save"
             loadingText="Saving…"
           />
-          {/* <LoaderButton
-            block
-            bsStyle="danger"
-            bsSize="large"
-            isLoading={this.state.isDeleting}
-            onClick={this.handleDelete}
-            text="Delete"
-            loadingText="Deleting…"
-          /> */}
         </form>}
     </div>
     )
   }
-  renderPostContent(content) {
-    return (
-      <div className="Content">
-        {content}
-      </div>
-    );
-  }
+
 
   renderCommentsList(comments) {
     let tmp_comments = [{}].concat(comments).sort((comment_a, comment_b) => comment_a.timestamp - comment_b.timestamp);
@@ -360,7 +341,6 @@ export default class Notes extends Component {
     return (
       <div className="Post">
         {this.props.isAuthenticated && this.renderPostId()}
-        {this.props.isAuthenticated && this.renderPostContent(this.state.content)}
         {this.props.isAuthenticated && this.renderComments()}
       </div>
     );
