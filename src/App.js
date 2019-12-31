@@ -1,12 +1,21 @@
 import Routes from "./Routes";
 import React, { Component } from "react";
-import { Nav, Navbar, NavItem } from "react-bootstrap";
+import { Nav, Navbar, NavItem, Image } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import "./App.css";
 import { Auth } from "aws-amplify";
 import { Link, withRouter } from "react-router-dom";
 
+//This function is to decrpt the JWT token that is returned from login function call
+function parseJwt (token) {
+  let base64Url = String(token).split('.')[1];
+  let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
 
+  return JSON.parse(jsonPayload);
+};
 
 class App extends Component {
   constructor(props) {
@@ -22,8 +31,17 @@ class App extends Component {
 
   async componentDidMount() {
     try {
-      await Auth.currentSession();
+      let session = await Auth.currentSession();
       this.userHasAuthenticated(true);
+      const idToken = session.idToken;
+      const cognitoroles = parseJwt(idToken.jwtToken)["cognito:roles"][0];
+      const user = parseJwt(session.idToken.jwtToken).name;
+      this.updateUser(user);
+      if (cognitoroles.indexOf("Cognito_crearactiva_admins_identityAuth_Role") > -1) {
+        //Account is admin
+        console.log("Account is admin");
+        this.adminHasAuthenticated(true);
+      }
     }
     catch(e) {
       if (e !== 'No current user') {
@@ -39,10 +57,7 @@ class App extends Component {
 
   updateUser = username => {
     this.setState({ user: username});
-  }
-
-  getUser = () => {
-    return this.state.user;
+    console.log(this.state.user);
   }
 
   adminHasAuthenticated = authenticated => {
@@ -72,7 +87,10 @@ class App extends Component {
         <Navbar fluid collapseOnSelect>
           <Navbar.Header>
             <Navbar.Brand>
-              <Link to="/">Scratch</Link>
+              <Image
+                src={"logo.png"}
+                responsive
+              />
             </Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>

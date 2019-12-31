@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { API, Storage } from "aws-amplify";
-import { PageHeader, FormGroup, FormControl, ControlLabel, ListGroup, ListGroupItem, Button } from "react-bootstrap";
+import { PageHeader, FormGroup, FormControl, ControlLabel, ListGroup, ListGroupItem, Image } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import config from "../config";
@@ -109,20 +109,21 @@ export default class Notes extends Component {
     this.setState({ isLoading: true });
 
     try {
-      let rtval = await this.createComment({
+      console.log(this.props);
+      console.log(this.props.userName);
+      await this.createComment({
         content: this.state.new_comment,
         pathParameters: {
           commentId: String(Date.now()),
           postId: this.state.postId,
+          userId: this.props.userName
         },
         requestContext: {
           identity: {
-            cognitoIdentityId: this.props.userName 
+            cognitoIdentityId: this.props.userName
           }
         }
       });
-
-      console.log(this.props.history);
       window.location.reload();
     } catch (e) {
       alert(e);
@@ -135,7 +136,8 @@ export default class Notes extends Component {
       [event.target.id]: event.target.value
     });
   }
-  
+
+  // handler when click on delete a single comment
   handlePostDelete = (postId) => async event => {
     event.preventDefault();
     console.log("Trying to delete a single post and all sub comments!!!");
@@ -198,12 +200,6 @@ export default class Notes extends Component {
     this.setState({ isLoading: false });
   }
 
-  deleteComment(comment) {
-    console.log(comment);
-    // console.log(`/comments/${comment.postId}`);
-    return;
-  }
-
   savePost(content_val,attachment_val) {
     console.log(this.state.postId);
     return API.put("posts", `/posts/${this.state.postId}`, {
@@ -216,13 +212,17 @@ export default class Notes extends Component {
         content: content_val,
         requestContext: {
           identity: {
-            cognitoIdentityId: this.props.userName 
+            cognitoIdentityId: this.props.userName
           }
         }
       }
     })
   }
-  
+
+  handleFileChange = event => {
+    this.file = event.target.files[0];
+  }
+
   handleUpdatePost = async event => {
     let attachment = null;
     event.preventDefault();
@@ -238,12 +238,10 @@ export default class Notes extends Component {
       if (this.file) {
         attachment = await s3Upload(this.file);
       }
-
-
       let rtval = await this.savePost(this.state.content,attachment);
 
       console.log(rtval);
-      this.props.history.push("/");
+      this.props.history.push(`/posts/${this.state.postId}`);
     } catch (e) {
       alert(e);
       this.setState({ isLoading: false });
@@ -251,10 +249,17 @@ export default class Notes extends Component {
   }
 
   renderPostId(){
-    console.log(this.state.post);
     return (
       <div className="Post">
       <h1>{this.state.postId}</h1>
+      <FormGroup>
+        <FormControl.Static>
+          <Image
+            src={this.state.attachmentURL}
+            responsive
+          />
+        </FormControl.Static>
+      </FormGroup>
       {this.props.adminIsAuthenticated && this.state.post &&
         <form onSubmit={this.handleUpdatePost}>
           <FormGroup controlId="content">
@@ -264,19 +269,6 @@ export default class Notes extends Component {
               componentClass="textarea"
             />
           </FormGroup>
-          {this.state.post.attachment &&
-            <FormGroup>
-              <ControlLabel>Attachment</ControlLabel>
-              <FormControl.Static>
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={this.state.attachmentURL}
-                >
-                  {this.formatFilename(this.state.post.attachment)}
-                </a>
-              </FormControl.Static>
-            </FormGroup>}
           <FormGroup controlId="file">
             {!this.state.post.attachment &&
               <ControlLabel>Attachment</ControlLabel>}
@@ -292,21 +284,11 @@ export default class Notes extends Component {
             text="Save"
             loadingText="Saving…"
           />
-          {/* <LoaderButton
-            block
-            bsStyle="danger"
-            bsSize="large"
-            isLoading={this.state.isDeleting}
-            onClick={this.handleDelete}
-            text="Delete"
-            loadingText="Deleting…"
-          /> */}
         </form>}
     </div>
     )
   }
   renderPostContent(content) {
-    console.log(content);
     return (
       <div className="Content">
         {content}
@@ -316,19 +298,17 @@ export default class Notes extends Component {
 
   renderCommentsList(comments) {
     let tmp_comments = [{}].concat(comments).sort((comment_a, comment_b) => comment_a.timestamp - comment_b.timestamp);
-    
     return tmp_comments.map(
       (comment, i) =>
           i !== 0
           ?   <ListGroupItem header={comment.content.trim().split("\n")[0]}>
                 {/* display the username of a single comment. */}
-                {"Created by " + comment.userId + " at " + new Date(comment.timestamp).toLocaleString()}
-                <LoaderButton 
-                  block
+                {"Created by " + comment.userId + " at " + new Date(comment.timestamp).toLocaleString() + " "}
+                <LoaderButton
+                  variant="danger"
                   bsSize="large"
-                  type="submit"   
-                  text="Delete"   
-                  variant="outline-light" 
+                  type="submit"
+                  text="Delete"
                   onClick={this.handleCommentDelete(comment)}
                   id="commentDelete"
                 />
@@ -369,7 +349,6 @@ export default class Notes extends Component {
   }
 
   render() {
-    console.log(this.props);
     return (
       <div className="Post">
         {this.props.isAuthenticated && this.renderPostId()}
