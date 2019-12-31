@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { API, Storage } from "aws-amplify";
-import { PageHeader, FormGroup, FormControl, ControlLabel, ListGroup, ListGroupItem, Image } from "react-bootstrap";
+import { PageHeader, FormGroup, FormControl, ControlLabel, ListGroup, ListGroupItem, Button } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import config from "../config";
@@ -204,18 +204,20 @@ export default class Notes extends Component {
     return;
   }
 
-  savePost(post) {
+  savePost(content_val,attachment_val) {
     console.log(this.state.postId);
-    console.log(post);
     return API.put("posts", `/posts/${this.state.postId}`, {
-      body: post,
-      pathParameters: {
-        feedId: this.state.feedId,
-        postId: this.state.postId
-      },
-      requestContext: {
-        identity: {
-          cognitoIdentityId: this.props.userName 
+      body: {
+        pathParameters: {
+          feedId: this.state.feedId,
+          postId: this.state.postId
+        },
+        attachment: attachment_val,
+        content: content_val,
+        requestContext: {
+          identity: {
+            cognitoIdentityId: this.props.userName 
+          }
         }
       }
     })
@@ -238,10 +240,7 @@ export default class Notes extends Component {
       }
 
 
-      let rtval = await this.savePost({
-            content: this.state.content,
-            attachment: attachment
-      });
+      let rtval = await this.savePost(this.state.content,attachment);
 
       console.log(rtval);
       this.props.history.push("/");
@@ -255,6 +254,7 @@ export default class Notes extends Component {
     console.log(this.state.post);
     return (
       <div className="Post">
+      <h1>{this.state.postId}</h1>
       {this.props.adminIsAuthenticated && this.state.post &&
         <form onSubmit={this.handleUpdatePost}>
           <FormGroup controlId="content">
@@ -266,11 +266,15 @@ export default class Notes extends Component {
           </FormGroup>
           {this.state.post.attachment &&
             <FormGroup>
+              <ControlLabel>Attachment</ControlLabel>
               <FormControl.Static>
-                <Image
-                  src={this.state.attachmentURL}
-                  responsive
-                />
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={this.state.attachmentURL}
+                >
+                  {this.formatFilename(this.state.post.attachment)}
+                </a>
               </FormControl.Static>
             </FormGroup>}
           <FormGroup controlId="file">
@@ -288,11 +292,27 @@ export default class Notes extends Component {
             text="Save"
             loadingText="Saving…"
           />
+          {/* <LoaderButton
+            block
+            bsStyle="danger"
+            bsSize="large"
+            isLoading={this.state.isDeleting}
+            onClick={this.handleDelete}
+            text="Delete"
+            loadingText="Deleting…"
+          /> */}
         </form>}
     </div>
     )
   }
-
+  renderPostContent(content) {
+    console.log(content);
+    return (
+      <div className="Content">
+        {content}
+      </div>
+    );
+  }
 
   renderCommentsList(comments) {
     let tmp_comments = [{}].concat(comments).sort((comment_a, comment_b) => comment_a.timestamp - comment_b.timestamp);
@@ -353,6 +373,8 @@ export default class Notes extends Component {
     return (
       <div className="Post">
         {this.props.isAuthenticated && this.renderPostId()}
+        {this.props.isAuthenticated && this.renderPostContent(this.state.content)}
+        <h3>Comments</h3>
         {this.props.isAuthenticated && this.renderComments()}
       </div>
     );
