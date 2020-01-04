@@ -1,12 +1,12 @@
+import { TextareaAutosize } from "react-autosize-textarea";
 import React, { Component } from "react";
 import { API, Storage } from "aws-amplify";
-import { PageHeader, FormGroup, FormControl, ControlLabel, ListGroup, ListGroupItem, Image } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
+import { FormGroup, FormControl, ControlLabel, ListGroup, ListGroupItem, Image } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import config from "../config";
 import "./Post.css";
-import { thisTypeAnnotation } from "@babel/types";
 import { s3Upload } from "../libs/awsLib";
+import { LinkContainer } from "react-router-bootstrap";
 
 export default class Notes extends Component {
   constructor(props) {
@@ -251,6 +251,25 @@ export default class Notes extends Component {
   renderPostId(){
     return (
       <div className="Post">
+      <LinkContainer
+        key={"back2" + this.state.feedId}
+        to={{
+            pathname: `/feeds/${this.state.feedId}`,
+            state: {
+              feedId: this.state.feedId,
+              postId: this.state.postId
+             }
+         }}
+      >
+      <LoaderButton
+        style={{float: 'left'}}
+        variant="danger"
+        type="submit"
+        text="Back"
+        id="back2feed" 
+      />
+
+      </LinkContainer>
       <h1>{this.state.postId}</h1>
       <FormGroup>
         <FormControl.Static>
@@ -288,13 +307,6 @@ export default class Notes extends Component {
     </div>
     )
   }
-  renderPostContent(content) {
-    return (
-      <div className="Content">
-        {content}
-      </div>
-    );
-  }
 
   renderCommentsList(comments) {
     let tmp_comments = [{}].concat(comments).sort((comment_a, comment_b) => comment_a.timestamp - comment_b.timestamp);
@@ -302,11 +314,10 @@ export default class Notes extends Component {
       (comment, i) =>
           i !== 0
           ?   <ListGroupItem header={comment.content.trim().split("\n")[0]}>
-                {/* display the username of a single comment. */}
                 {"Created by " + comment.userId + " at " + new Date(comment.timestamp).toLocaleString() + " "}
                 <LoaderButton
+                  style={{float: 'right'}}
                   variant="danger"
-                  bsSize="large"
                   type="submit"
                   text="Delete"
                   onClick={this.handleCommentDelete(comment)}
@@ -352,7 +363,6 @@ export default class Notes extends Component {
     return (
       <div className="Post">
         {this.props.isAuthenticated && this.renderPostId()}
-        {this.props.isAuthenticated && this.renderPostContent(this.state.content)}
         <h3>Comments</h3>
         {this.props.isAuthenticated && this.renderComments()}
       </div>
